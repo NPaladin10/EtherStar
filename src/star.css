@@ -1,0 +1,63 @@
+.center-div {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+#about {
+  width: 100%;
+  background-color: whitesmoke;
+}
+#upgrade {
+  width: 100%;
+  background-color: whitesmoke;
+}
+#upgrade input {
+  max-width: 75px;
+}
+#upgrade .input-group {
+  min-width:100%;
+}
+
+#timer {
+  width: 200px;
+  background-color: whitesmoke;
+}
+#options {
+  width: 300px;
+  background-color: whitesmoke;
+}
+
+@media only screen and (max-width: 800px) {
+  .data text {
+    font-size: 30px;
+  }
+}
+
+/*CSS styling for Galaxy */
+.planets .sun {
+  fill: orange;
+  stroke: none;
+}
+.planets .gasGiant {
+  fill: brown;
+  stroke: none;
+}
+.planets .rocky {
+  fill: blue;
+  stroke: none;
+}
+
+.black {
+  background-color:black;
+}
+.darkred {
+  background-color:darkred;
+}
+.limegreen {
+  background-color:limegreen;
+}
+.royalblue {
+  background-color:royalblue;
+}

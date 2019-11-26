@@ -1,0 +1,180 @@
+[v-cloak] {
+  display: none;
+}
+
+body {
+  margin: 0;
+  background-color: silver;
+  overflow: hidden;
+}
+
+/* FONT Classes */
+
+.font-lg {
+  font-size: large;
+}
+.font-sm {
+  font-size: small;
+}
+.font-blue {
+  color: blue;
+}
+.underline {
+  text-decoration: underline;
+}
+.pointer {
+  cursor: pointer;
+}
+.link {
+  color: blue;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+table.border-all, th, td {
+  border: 1px solid black;
+}
+
+/* HEADER Double Border */
+.h-double-border {
+  border-top: 6px double black;
+  border-bottom: 2px solid black;
+}
+
+/* OVERLAY FOR CENTER DATA */
+.overlay {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgba(245, 245, 245, 0.75);
+  width : 1200px;
+  max-height: 100%;
+  overflow-y: visible;
+}
+@media only screen and (max-width: 1200px) {
+  .overlay {
+    width: 100%;
+  }
+}
+
+/* Tooltip container */
+.tip {
+  position: relative;
+  display: inline-block;
+  border-bottom: 1px dotted black; /* If you want dots under the hoverable text */
+}
+
+/* Tooltip text */
+.tip .tiptext {
+  visibility: hidden;
+  width: 300px;
+  background-color: black;
+  color: #fff;
+  text-align: left;
+  padding: 5px 5px;
+  border-radius: 6px;
+ 
+  /* Position the tooltip text - see examples below! */
+  position: absolute;
+  z-index: 5;
+}
+/* Tooltip text TOP */
+.tip .tiptext {
+  width: 300px;
+  bottom: 100%;
+  left: 50%;
+  /* margin-left: -100px; */ /* Use half of the width (120/2 = 60), to center the tooltip */
+}
+
+/* Show the tooltip text when you mouse over the tooltip container */
+.tip:hover .tiptext {
+  visibility: visible;
+}
+
+/*CSS styling for dots boxes */
+.box {
+  display: inline-block;
+}
+.box.box-md {
+  height: 20px;
+  width: 20px;
+}
+.circle {
+  border-radius: 50%;
+  display: inline-block;
+}
+.circle.circle-sm {
+  height: 10px;
+  width: 10px;
+}
+.circle.circle-md {
+  height: 20px;
+  width: 20px;
+}
+.circle.circle-success {
+  background-color: #28a745;
+}
+
+.diamond {
+  color: aqua;
+}
+.ruby {
+  color: red;
+}
+.citrine {
+  color: orange;
+}
+.topaz {
+  color: yellow;
+}
+.emerald {
+  color: green;
+}
+.sapphire {
+  color: blue;
+}
+.amethyst {
+  color: purple;
+}
+
+/*CSS styling for Arrow */
+.arrow-down {
+  width: 20px;
+  height: 20px;
+  background: #28a745;
+  position: relative;
+  border-radius: .2rem;
+}
+
+.arrow-down.active {
+  background: #17a2b8;
+}
+
+.arrow-down:before, .arrow-down:after {
+  content: "";
+  display: block;
+  width: 10px;
+  height: 5px;
+  background: white;
+  position: absolute;
+  top: 10px;
+  transition: transform .5s;
+}
+
+.arrow-down:before {
+  right: 7px;
+  transform: rotate(45deg);
+}
+
+.arrow-down:after {
+  right: 3px;
+  transform: rotate(-45deg);
+}
+
+.arrow-down.active:before {
+  transform: rotate(-45deg);
+}
+
+.arrow-down.active:after {
+  transform: rotate(45deg);
+}
