@@ -5,7 +5,7 @@
 body {
   margin: 0;
   background-color: silver;
-  overflow: hidden;
+  overflow: auto;
 }
 
 /* FONT Classes */
@@ -31,31 +31,7 @@ body {
   text-decoration: underline;
 }
 
-table.border-all, th, td {
-  border: 1px solid black;
-}
 
-/* HEADER Double Border */
-.h-double-border {
-  border-top: 6px double black;
-  border-bottom: 2px solid black;
-}
-
-/* OVERLAY FOR CENTER DATA */
-.overlay {
-  position: fixed;
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: rgba(245, 245, 245, 0.75);
-  width : 1200px;
-  max-height: 100%;
-  overflow-y: visible;
-}
-@media only screen and (max-width: 1200px) {
-  .overlay {
-    width: 100%;
-  }
-}
 
 /* Tooltip container */
 .tip {
@@ -135,46 +111,4 @@ table.border-all, th, td {
 }
 .amethyst {
   color: purple;
-}
-
-/*CSS styling for Arrow */
-.arrow-down {
-  width: 20px;
-  height: 20px;
-  background: #28a745;
-  position: relative;
-  border-radius: .2rem;
-}
-
-.arrow-down.active {
-  background: #17a2b8;
-}
-
-.arrow-down:before, .arrow-down:after {
-  content: "";
-  display: block;
-  width: 10px;
-  height: 5px;
-  background: white;
-  position: absolute;
-  top: 10px;
-  transition: transform .5s;
-}
-
-.arrow-down:before {
-  right: 7px;
-  transform: rotate(45deg);
-}
-
-.arrow-down:after {
-  right: 3px;
-  transform: rotate(-45deg);
-}
-
-.arrow-down.active:before {
-  transform: rotate(-45deg);
-}
-
-.arrow-down.active:after {
-  transform: rotate(45deg);
 }

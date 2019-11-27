@@ -2,13 +2,78 @@
 UI 
 */
 const UI = (app)=>{
+  //Handle System display
+  const displaySystem = () => {
+    let block = app.UI.main.system
+    let svg = d3.select("svg")
+    svg.html("")
+    //check width
+    let iW = window.innerWidth
+    let iH = window.innerHeight
+    let D = iH < iW ? "W" : "H"
+    //now add planets 
+    let g = svg.append("g").attr("class","planets")
+    let N = block.planets.length
+    let step = D=="W" ? iW/N : iH/N
+    step = step < 200 ? 200 : step
+    let knowns = app.data.knowns[block.i]
+    //show  
+    g.selectAll("circle").data(block.planets).enter().append("circle")
+      .attr("cx", (d,i)=> D=="W" ? (i==0 ? -100 : step*(i+1)) : iW/2)
+      .attr("cy", (d,i)=> D=="W" ? iH/2 : (i==0 ? -100 : step*(i+1)))
+      .attr("r", d=> {
+        return [350,80,20][d.type]
+      }) 
+      .attr("class",d=> ["sun","gasGiant","rocky"][d.type])
+      .on("click",(d,i)=> {
+        if(i==0 || app.UI.main.time > 0) return
+        app.UI.main.options = []
+        app.UI.main.pid = i 
+        if(knowns[i-1][0] == 0) app.UI.main.options.push("Surface Scan")
+        app.UI.main.options.push("Point Scan")     
+        if(knowns[i-1].length>1) app.UI.main.options.push("Harvest")    
+      })
+    
+    //add data 
+    g = svg.append("g").attr("class","data")
+    //mid-text position 
+    let mTP = D=="W" ? iH/2 : iW/2
+    g.selectAll("text").data(block.planets).enter().append("text")
+      .attr("x", (d,i)=> D=="W" ? (i==0 ? -100 : (knowns[i-1][0]>0 ? step*(i+1)-20 : step*(i+1)-5 )) : (d.type == 1 ? mTP+100 : mTP+30))
+      .attr("y", (d,i)=> D=="W" ? (d.type == 1 ? mTP-100 : mTP-30) : step*(i+1))
+      .html((d,i)=> {
+        if(i==0) return ""
+        let k = knowns[i-1]
+        let n = k.length-1
+        return k[0]>0 ? d.tx.length + "/" + (n) : n
+      })    
+
+    resize()
+  }
+
+  const resize = ()=>{
+    //set svg to window 
+    let iW = window.innerWidth
+    let iH = window.innerHeight
+    let D = iH < iW ? "W" : "H"
+    //set size
+    let svg = d3.select("#map svg").attr("height", iH).attr("width", iW)
+    //get bbox 
+    let gS = d3.select("svg").node().getBBox()
+    let w = gS.width //gS.width < 800 ? 800 : gS.width
+    let h = gS.height //gS.height < 600 ? 600 : gS.height
+    let vB = D=="W" ? [gS.x+450, gS.y - 25, w + 25, h + 25] : [gS.x, gS.y+350, w, h]
+    //viewBox="0 0 100 100"
+    d3.select("svg").attr("viewBox", vB.join(" "))
+  }
+
+  window.addEventListener("resize", resize )
+
   //creates the VUE js instance
   app.UI.main = new Vue({
     el: '#ui-main',
     data: {
       now: 0,
-      style: "W",
-      screen:[0,0],
       id : 0,
       pid: -1,
       eid: -1,
@@ -17,24 +82,22 @@ const UI = (app)=>{
       ship : null,
       statNames : ["Hyperspace Drive","Gravitic Drive","Sensors","Harvesters"],
       blocks : [],
+      system : null,
       knowns : [],
       options: [],
       action: "",
       time : 0,
       tStep : 0,
       show : "",
-      showSystem : false,
       notify:[]
     },
     mounted() {
       this.now = Date.now() / 1000
     },
     computed: {
-      records () {
-        return {
-          ships : app.ships.length,
-          E : app.data.e
-        }
+      //current selected block
+      aB () {
+        return this.blocks.find(b => b.i == this.id)
       },
       //planetary knowns 
       pKnown () {
@@ -47,50 +110,9 @@ const UI = (app)=>{
       //determine new speeds based upon upgrades 
       shipRates () {
         return this.ship.stats.map(val => 1/(1+(val/10)))
-      },
-      //current selected system
-      block () { return app.blocks[this.id] },
-      planets () { return this.block.planets },
-      //Styling for CSS maps 
-      orbitStyle() {
-        if(this.style =="W"){
-          let np = this.planets.length
-          return this.planets.map((p,i) => {
-            if(i==0) return {
-              width : "6em"
-            }
-          })
-        }
-        else {
-          return this.planets.map((p,i) => {
-            if(i==0) return {
-              height : "1em"
-            }
-          })
-        }        
-      },
-      planetStyle() {
-        return this.planets.map((p,i) => {
-          let pS = {
-            height : p.d+"em",
-            width : p.d+"em"
-          }
-          if(i==0) {
-            if(this.style =="W") pS.left="-35em"
-            else {
-              pS.top = "-40em"
-              pS.left=-this.screen[0]/2.5+"px"
-            }
-          }
-          if(p.type==1) pS['background-image'] = p.color
-          else if(p.type==2) pS['background-color'] = p.color
-
-          return pS
-        })
       }
     },
     methods: {
-      //PERFORM AN ACTION
       act(what){
         let k = app.knowns[this.id][this.pid-1]
         this.action = what
@@ -100,7 +122,7 @@ const UI = (app)=>{
         if(what == "Point Scan"){
           this.time = app.times.pointScan*this.shipRates[2]
           //pull from block chain
-          let p = this.planets[this.pid]
+          let p = this.system.planets[this.pid]
           let ti = k.length-1 
           let txid = p.tx[ti]
           //now get the tx data 
@@ -123,7 +145,6 @@ const UI = (app)=>{
         }
         if(what != "Harvest") this.options = []
       },
-      //CANCEL AN ACTION
       cancelAct () {
         let k = app.knowns[this.id][this.pid-1]
         let what = this.action
@@ -142,20 +163,17 @@ const UI = (app)=>{
         this.time = 0
         this.tStep = 0
         this.action = ""
-        //update knowns
-        this.knowns = app.knowns[this.id].slice()
       },
       complete () {
         let k = app.knowns[this.id][this.pid-1]
         let what = this.action
         if(what == "Surface Scan"){
-          k[0] = this.planets[this.pid].tx.length
-          //update knowns
-          this.knowns = app.knowns[this.id].slice()
+          //adjust pid, because 0 is sun 
+          let p = this.system.planets[this.pid]
+          k[0] = p.tx.length
         }
         if(what == "Point Scan"){
-          //update knowns
-          this.knowns = app.knowns[this.id].slice()
+
         }
         if(what == "Harvest Ether"){
           let e = k[this.eid].map(Number)
@@ -167,9 +185,8 @@ const UI = (app)=>{
           k[this.eid][1] = e[0]
         }
         if(what == "Enter System"){
+          this.system = app.blocks[this.id]
           app.shipSystem = this.id
-          this.knowns = app.knowns[this.id].slice()
-          this.showSystem = true
         }
         if(what == "Exit System"){
           this.exitSystem()
@@ -178,18 +195,26 @@ const UI = (app)=>{
           app.activeShip.e = 0 
           app.ether.add(e)
         }
+        if(this.system) {
+          displaySystem()
+          this.knowns = app.knowns[this.id].slice()
+        }
         this.action = ""
       },
       exitSystem() {
-        app.shipSystem = this.id = 0  
-        this.showSystem = false
+        this.id = 0  
+        this.system = null
+        let svg = d3.select("svg")
+        svg.html("")
+        app.shipSystem = 0
       },
-      displaySystem() {  },
+      displaySystem() { displaySystem() },
       setSystem (bn) {
         this.id = bn
-        this.showSystem = true
-        this.knowns = app.knowns[this.id].slice()
+        this.system = app.blocks[this.id]
+        this.knowns = app.knowns[this.id]
         this.e = app.activeShip.e
+        displaySystem()
       },
       buyUpgrade(i) {
         let ship = app.activeShip
@@ -201,33 +226,11 @@ const UI = (app)=>{
         //update
         this.ship.stats = ship.stats.slice()
       },
-      planetOptions (i) {
-        if(i==0 || app.UI.main.time > 0) return
-        this.action = ''
-        this.options = []
-        this.pid = i 
-        if(this.knowns[i-1][0] == 0) this.options.push("Surface Scan")
-        app.UI.main.options.push("Point Scan")     
-        if(this.knowns[i-1].length>1) app.UI.main.options.push("Harvest") 
-      },
       reset() {
         app.reset()
       }
     }
   })
-
-  const resize = ()=>{
-    //set svg to window 
-    let iW = window.innerWidth
-    let iH = window.innerHeight
-    //set map style 
-    app.UI.main.style = iW > iH ? "W" : "H"
-    app.UI.main.screen = [iW,iH]
-  }
-  resize()
-
-  window.addEventListener("resize", resize )
-  window.addEventListener("orientationchange", resize )
 }
 
 export {UI}

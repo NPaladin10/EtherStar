@@ -5,32 +5,13 @@
   transform: translate(-50%, -50%);
 }
 
-/*CSS To Bar*/
-#topBar {
-  width: 100%;
-  z-index:10;
-}
-#topHeader {
-  width: 1000px;
-  margin: auto;
-  background-color: rgba(245, 245, 245, 0.75);
-}
-@media only screen and (max-width: 1200px) {
-  #topHeader {
-    width: 100%;
-  }
-}
-
-/*CSS styling for pop up boxes */
 #about {
   width: 100%;
   background-color: whitesmoke;
-  z-index:10;
 }
 #upgrade {
   width: 100%;
   background-color: whitesmoke;
-  z-index:10;
 }
 #upgrade input {
   max-width: 75px;
@@ -42,35 +23,30 @@
 #timer {
   width: 200px;
   background-color: whitesmoke;
-  z-index:10;
 }
 #options {
   width: 300px;
   background-color: whitesmoke;
-  z-index:10;
+}
+
+@media only screen and (max-width: 800px) {
+  .data text {
+    font-size: 30px;
+  }
 }
 
 /*CSS styling for Galaxy */
-#map-wide {
-  position: fixed;
-  top: 0;
-  left:0;
-  bottom:0;
-  right:0;
-  overflow:auto;
-  z-index: -1;
+.planets .sun {
+  fill: orange;
+  stroke: none;
 }
-#map-high {
-  width:100%;
+.planets .gasGiant {
+  fill: brown;
+  stroke: none;
 }
-.planet {
-  border-radius: 50%;
-}
-.sun {
-  z-index: -1;
-  position:relative;
-  background-color:goldenrod;
-  border-radius: 50%;
+.planets .rocky {
+  fill: blue;
+  stroke: none;
 }
 
 .black {

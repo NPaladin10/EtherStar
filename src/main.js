@@ -79,6 +79,7 @@ const app = {
     app.addShip()
   },
   load() {
+    let UI = this.UI.main
     let id = this.games.current
     DB.getItem(id + ".data").then(val=>{
       if (val) {
@@ -86,10 +87,14 @@ const app = {
       }
       //loop through ships checking for alive
       let now = Date.now() / 1000
-      this.ships.forEach(s=> {
-        if(s.loc[0] == -1) return
+      this.ships.forEach((s,i)=> {
+        let bn = s.loc[0]
+        if(bn == -1) return
         //kill
-        if(s.loc[0] != 0 && s.loc[2] < now) s.loc=[-1,0,0]
+        if(bn != 0 && s.loc[2] < now) {
+          UI.notify.push("System "+bn+" was lost, ship "+i+" is gone.")
+          s.loc=[-1,0,0]
+        }
       })
       //check for alive 
       if(this.shipsAlive.length==0) this.addShip()
@@ -165,9 +170,15 @@ setInterval(()=>{
     } else {
       delete app.blocks[bn]
       //check if ships are lost  
-      let ships = app.shipsByBlock(bn)
-      //set to destroy
-      ships.forEach(s => s.loc[0] = -1)
+      app.ships.forEach((s,i)=> {
+        let sb = s.loc[0]
+        if(sb == -1) return
+        //kill
+        if(sb == bn) {
+          UI.notify.push("System "+bn+" was lost, ship "+i+" is gone.")
+          s.loc=[-1,0,0]
+        }
+      })
       //add new 
       if(app.shipsAlive.length==0) app.addShip()
     }     
