@@ -20,6 +20,7 @@ const UI = (app)=>{
       knowns : [],
       options: [],
       action: "",
+      nPS : 1,
       time : 0,
       tStep : 0,
       show : "",
@@ -38,7 +39,7 @@ const UI = (app)=>{
       },
       //planetary knowns 
       pKnown () {
-        return this.knowns[this.pid-1].slice(1).map(k=> Number(k[0])-k[1])
+        return this.knowns.map(k=> k.map((k,i)=> i==0? k : Number(k[0])-k[1]))
       },
       //ship upgrades 
       upgradeCosts () {
@@ -83,7 +84,9 @@ const UI = (app)=>{
             }
           }
           if(p.type==1) pS['background-image'] = p.color
-          else if(p.type==2) pS['background-color'] = p.color
+          else if(p.type==2) {
+            pS['background-image'] = 'radial-gradient(farthest-corner at 75% 50%,'+p.color+','+p.color+',white)'
+          }
 
           return pS
         })
@@ -99,15 +102,6 @@ const UI = (app)=>{
         }
         if(what == "Point Scan"){
           this.time = app.times.pointScan*this.shipRates[2]
-          //pull from block chain
-          let p = this.planets[this.pid]
-          let ti = k.length-1 
-          let txid = p.tx[ti]
-          //now get the tx data 
-          app.provider.getTransaction(txid).then(tx => {
-            let ev = ethers.utils.formatEther(tx.value.toString()) 
-            k.push([ev,0])
-          })
         }
         if(what == "Harvest Ether"){
           let e = k[this.eid].map(Number)
@@ -154,8 +148,18 @@ const UI = (app)=>{
           this.knowns = app.knowns[this.id].slice()
         }
         if(what == "Point Scan"){
-          //update knowns
-          this.knowns = app.knowns[this.id].slice()
+          this.nPS--
+          //pull from block chain
+          let p = this.planets[this.pid]
+          let ti = k.length-1 
+          let txid = p.tx[ti]
+          //now get the tx data 
+          app.provider.getTransaction(txid).then(tx => {
+            let ev = ethers.utils.formatEther(tx.value.toString()) 
+            k.push([ev,0])
+            //update knowns
+            this.knowns = app.knowns[this.id].slice()
+          })
         }
         if(what == "Harvest Ether"){
           let e = k[this.eid].map(Number)
@@ -178,7 +182,11 @@ const UI = (app)=>{
           app.activeShip.e = 0 
           app.ether.add(e)
         }
-        this.action = ""
+        //clear or repeat 
+        if(what == "Point Scan" && this.nPS > 0){
+          this.act(what)
+        }
+        else this.action = ""
       },
       exitSystem() {
         app.shipSystem = this.id = 0  
@@ -208,7 +216,7 @@ const UI = (app)=>{
         this.pid = i 
         if(this.knowns[i-1][0] == 0) this.options.push("Surface Scan")
         app.UI.main.options.push("Point Scan")     
-        if(this.knowns[i-1].length>1) app.UI.main.options.push("Harvest") 
+        if(this.pKnown[i-1].filter((k,j)=>j>0&&k!=0).length>0) app.UI.main.options.push("Harvest") 
       },
       reset() {
         app.reset()

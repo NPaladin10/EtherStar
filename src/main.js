@@ -27,7 +27,7 @@ const app = {
   times: {
     enterSystem: 10,
     exitSystem: 5,
-    surfaceScan: 10,
+    surfaceScan: 30,
     pointScan: 10,
     extract: 100,
   },

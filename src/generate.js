@@ -5,7 +5,7 @@ const gasGiants = [
     "linear-gradient(#99E8EC, #19BDBA, #99E8EC, #19BDBA, #99E8EC)",
     "linear-gradient(#384EC7, #2F3893, #384EC7, #2F3893, #384EC7)"
 ]
-const planetColors  = ["blue","brown","yellow","gray"]
+const planetColors  = ["blue","brown","tan","gray"]
 
 const sizing = (id,planets) => {
     let rng = new Chance(id)
