@@ -85,7 +85,7 @@
       <div id="map-high" v-if="showSystem &&style=='H'" v-cloak>
         <div class="orbit-vert" v-for="(p,i) in planets" :style="orbitStyle[i]" align="center" @click="planetOptions(i)">
           <div v-if="i>0">
-            <span class="EData">{{pKnown[i-1][0]}}|{{pKnown[i-1].filter((k,j)=>j>0&&k !=0).length}}|{{pKnown[i-1].length-1}}</span>
+            <span class="EData">{{knowns[i-1].n-knowns[i-1].s}}|{{knowns[i-1].k.filter(k=> k[1]-k[0]>0).length}}</span>
           </div>
           <div :class="p.class" :style="planetStyle[i]"></div>
         </div>
@@ -95,7 +95,7 @@
       <div id="map-wide" v-if="showSystem && style=='W'" class="d-flex align-items-center" v-cloak>
         <div class="orbit px-3" v-for="(p,i) in planets" :style="orbitStyle[i]" @click="planetOptions(i)">
           <div v-if="i>0">
-            <span class="EData">{{pKnown[i-1][0]}}|{{pKnown[i-1].filter((k,j)=>j>0&&k !=0).length}}|{{pKnown[i-1].length-1}}</span>
+            <span class="EData">{{knowns[i-1].n-knowns[i-1].s}}|{{knowns[i-1].k.filter(k=> k[0]-k[1]>0).length}}</span>
           </div>
           <div :class="p.class" :style="planetStyle[i]"></div>
         </div>
@@ -103,18 +103,12 @@
       <!--END WIDE MAP---------------------------------------------->
       <div id="options" class="p-2 center-div" v-if="options.length>0" v-cloak>
         <div class="my-1" v-for="o in options">
-          <div class="btn-group w-100" role="group" v-if="o=='Point Scan'">
-            <button type="button" class="btn btn-light" @click="nPS++">+</button>
-            <button type="button" class="btn btn-light" @click="nPS--" :disabled="nPS<=1">-</button>
-            <button type="button" class="btn btn-info btn-block" @click="act(o)">Point Scan {{nPS}}</button>
-          </div>
-          <button type="button" class="btn btn-block btn-info"  @click="act(o)" v-if="o!='Point Scan'">{{o}}</button>
+          <button type="button" class="btn btn-block btn-info"  @click="act(o)">{{o}}</button>
         </div>
         <div v-if="action=='Harvest'">
-          <div>{{pKnown[pid-1].filter(k=>k==0).length}} @ Ξ0</div>
           <div class="input-group">
             <select class="custom-select" v-model="eid">
-              <option v-for="(k,i) in pKnown[pid-1]" v-if="i>0&&k>0" :value="i">Ξ{{k}}</option>
+              <option v-for="(k,i) in knowns[pid-1].k" v-if="k[0]-k[1]>0" :value="i">Ξ{{k[0]-k[1]}}</option>
             </select>
             <div class="input-group-append">
               <button class="btn btn-outline-success" type="button" @click="act('Harvest Ether')">Harvest</button>
@@ -128,7 +122,7 @@
         <div class="progress">
           <div class="progress-bar" role="progressbar" :style="'width:'+(100*tStep/time)+'%'">{{(100*tStep/time).toFixed()}}%</div>
         </div>
-        <button type="button" class="mt-1 btn btn-block btn-warning" v-if="time>120" @click="cancelAct()">Cancel</button>
+        <button type="button" class="mt-1 btn btn-block btn-warning" v-if="time>120||action=='Point Scan'" @click="cancelAct()">Cancel</button>
       </div>
       <div id="upgrade" class="p-2 center-div" v-if="show=='upgrade'" v-cloak>
         <h4>Upgrades</h4>

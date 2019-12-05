@@ -26,12 +26,13 @@ const app = {
   interval: 128,
   times: {
     enterSystem: 10,
-    exitSystem: 5,
-    surfaceScan: 30,
-    pointScan: 10,
-    extract: 100,
+    exitSystem: 30,
+    surfaceScan: 60,
+    pointScan: 15,
+    extract: 120,
   },
   data: {
+    v: "0.0.4",
     e : [0,0],
     ships: [],
     knowns: {},
@@ -83,6 +84,11 @@ const app = {
     let id = this.games.current
     DB.getItem(id + ".data").then(val=>{
       if (val) {
+        val.v = val.v || "0.0"
+        if(val.v != this.data.v) {
+          val.v = this.data.v
+          val.knowns = {}
+        }
         app.data = val
       }
       //loop through ships checking for alive
@@ -160,7 +166,13 @@ setInterval(()=>{
       block.dt = now - block.born
       //check for knowns 
       if (!app.knowns[bn]) {
-        app.knowns[bn] = block.planets.slice(1).map(p=>[0])
+        app.knowns[bn] = block.planets.slice(1).map(p=>{
+          return {
+            n:0,
+            s:0,
+            k:[]
+          }
+        })
       }
       UI.blocks.push(block)
       //show map 
